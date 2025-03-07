@@ -16,7 +16,7 @@ function extractProblemDetails() {
 
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "getProblemDetails") {
+    if (request.action === "get_problem_details") {
         const details = extractProblemDetails();
         sendResponse(details);
     }

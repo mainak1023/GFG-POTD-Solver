@@ -3,24 +3,31 @@ import react from "@vitejs/plugin-react"
 import { resolve } from "path"
 import fs from "fs"
 
-// Check if the entry files exist
-const backgroundPath = resolve(__dirname, "src/background.js")
-const contentPath = resolve(__dirname, "src/content.js")
+// Define entry files
 const mainPath = resolve(__dirname, "index.html")
+const backgroundPath = resolve(__dirname, "public/background.js")
+const contentPath = resolve(__dirname, "public/content.js")
 
+// Check if files exist
+const backgroundExists = fs.existsSync(backgroundPath)
+const contentExists = fs.existsSync(contentPath)
+
+// Define inputs
 const inputs = {
   main: mainPath,
 }
 
 // Only add background.js if it exists
-if (fs.existsSync(backgroundPath)) {
+if (backgroundExists) {
   inputs.background = backgroundPath
 }
 
 // Only add content.js if it exists
-if (fs.existsSync(contentPath)) {
+if (contentExists) {
   inputs.content = contentPath
 }
+
+console.log("Build inputs:", inputs)
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -40,4 +47,3 @@ export default defineConfig({
     emptyOutDir: true,
   },
 })
-

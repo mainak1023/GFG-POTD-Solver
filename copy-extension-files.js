@@ -1,45 +1,35 @@
-const fs = require("fs")
-const path = require("path")
+import fs from 'fs-extra';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Create dist directory if it doesn't exist
-if (!fs.existsSync("dist")) {
-    fs.mkdirSync("dist")
-}
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Create icons directory if it doesn't exist
-if (!fs.existsSync("dist/icons")) {
-    fs.mkdirSync("dist/icons")
-}
+// Define the files and directories to copy
+const filesToCopy = [
+    'manifest.json',
+    'background.js',
+    'content.js',
+    'icons/icon48.png',
+    // Add other files as needed
+];
 
-// Copy background.js
-fs.copyFileSync(path.resolve(__dirname, "src/background.js"), path.resolve(__dirname, "dist/background.js"))
-console.log("✓ Copied background.js to dist folder")
+// Define the source and destination directories
+const srcDir = path.join(__dirname, 'public');
+const destDir = path.join(__dirname, 'dist');
 
-// Copy content.js
-fs.copyFileSync(path.resolve(__dirname, "src/content.js"), path.resolve(__dirname, "dist/content.js"))
-console.log("✓ Copied content.js to dist folder")
+// Ensure the destination directory exists
+fs.ensureDirSync(destDir);
 
-// Copy manifest.json
-fs.copyFileSync(path.resolve(__dirname, "public/manifest.json"), path.resolve(__dirname, "dist/manifest.json"))
-console.log("✓ Copied manifest.json to dist folder")
+// Copy each file from the source to the destination
+filesToCopy.forEach(file => {
+    const srcFile = path.join(srcDir, file);
+    const destFile = path.join(destDir, file);
 
-    // Copy icon files
-    ;["icon16.png", "icon48.png", "icon128.png"].forEach((iconFile) => {
-        try {
-            fs.copyFileSync(
-                path.resolve(__dirname, `public/icons/${iconFile}`),
-                path.resolve(__dirname, `dist/icons/${iconFile}`),
-            )
-            console.log(`✓ Copied ${iconFile} to dist/icons folder`)
-        } catch (err) {
-            console.error(`✗ Error copying ${iconFile}: ${err.message}`)
-            console.log("  Please make sure you have the icon files in public/icons/")
-        }
-    })
+    // Ensure the destination directory exists (for nested files)
+    const destFileDir = path.dirname(destFile);
+    fs.ensureDirSync(destFileDir);
 
-console.log("\n✅ Extension files copied successfully!")
-console.log("📝 To load the extension in Chrome:")
-console.log("  1. Go to chrome://extensions/")
-console.log('  2. Enable "Developer mode"')
-console.log('  3. Click "Load unpacked" and select the dist folder')
-
+    fs.copySync(srcFile, destFile);
+    console.log(`Copied ${file} to ${destFile}`);
+});
