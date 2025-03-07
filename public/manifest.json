@@ -1,0 +1,34 @@
+{
+    "manifest_version": 3,
+    "name": "GFG POTD Helper",
+    "version": "1.0.0",
+    "description": "A helper extension for solving GeeksForGeeks Problem of the Day",
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "GFG POTD Helper"
+    },
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting",
+        "tabs"
+    ],
+    "host_permissions": [
+        "https://practice.geeksforgeeks.org/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://practice.geeksforgeeks.org/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "icons": {
+        "16": "vite.svg",
+        "48": "vite.svg",
+        "128": "vite.svg"
+    }
+}
