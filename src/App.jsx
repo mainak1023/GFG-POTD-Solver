@@ -1,136 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+"use client"
+
+import { useState, useEffect } from "react"
+import "./App.css"
 
 function App() {
-  const [problemDetails, setProblemDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [hints, setHints] = useState([]);
-  const [activeTab, setActiveTab] = useState('details');
+  const [currentProblem, setCurrentProblem] = useState(null)
+  const [solution, setSolution] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Query the active tab to get problem details
-    if (chrome?.tabs) {
+    // Check if we're on a POTD page by asking the content script
+    if (typeof chrome !== "undefined" && chrome.tabs) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const currentTab = tabs[0];
-        if (currentTab && currentTab.url.includes('geeksforgeeks.org')) {
-          chrome.tabs.sendMessage(
-            currentTab.id,
-            { action: "getProblemDetails" },
-            (response) => {
-              if (response) {
-                setProblemDetails(response);
-                // Generate some basic hints based on the problem
-                generateBasicHints(response);
+        chrome.tabs.sendMessage(tabs[0].id, { action: "get_problem_details" }, (response) => {
+          if (response) {
+            setCurrentProblem(response)
+
+            // Check if we have a cached solution
+            chrome.storage.local.get("cachedSolutions", (result) => {
+              if (result.cachedSolutions && result.cachedSolutions[response.title]) {
+                setSolution(result.cachedSolutions[response.title])
               }
-              setLoading(false);
-            }
-          );
-        } else {
-          setLoading(false);
-        }
-      });
+              setLoading(false)
+            })
+          } else {
+            setLoading(false)
+          }
+        })
+      })
     } else {
-      // For development outside of Chrome extension
-      setLoading(false);
+      setLoading(false)
+      console.warn("Chrome extension APIs not available.")
     }
-  }, []);
+  }, [])
 
-  const generateBasicHints = (problem) => {
-    // In a real extension, you might want to use an API for this
-    // This is just a simple example
-    if (problem) {
-      const newHints = [
-        "Try breaking down the problem into smaller steps",
-        "Consider edge cases like empty inputs or large values",
-        "Think about using common data structures (arrays, stacks, queues, etc.)",
-        "Check if dynamic programming might be applicable",
-        "Consider time and space complexity requirements"
-      ];
-      setHints(newHints);
+  const handleFetchSolution = () => {
+    setLoading(true)
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      chrome.runtime.sendMessage({ action: "show_solution" })
+
+      // Poll for solution every second
+      const checkInterval = setInterval(() => {
+        chrome.storage.local.get("cachedSolutions", (result) => {
+          if (result.cachedSolutions && currentProblem && result.cachedSolutions[currentProblem.title]) {
+            setSolution(result.cachedSolutions[currentProblem.title])
+            setLoading(false)
+            clearInterval(checkInterval)
+          }
+        })
+      }, 1000)
+
+      // Stop polling after 10 seconds
+      setTimeout(() => {
+        clearInterval(checkInterval)
+        setLoading(false)
+      }, 10000)
+    } else {
+      setLoading(false)
+      console.warn("Chrome extension APIs not available.")
     }
-  };
-
-  // For development preview
-  const previewProblem = {
-    title: "Sample Problem: Find Maximum Subarray Sum",
-    description: "Given an array of integers, find the contiguous subarray with the largest sum.",
-    examples: "<pre>Input: [-2,1,-3,4,-1,2,1,-5,4]<br>Output: 6<br>Explanation: [4,-1,2,1] has the largest sum = 6.</pre>"
-  };
-
-  // Use preview data if no problem details are available (for development)
-  const displayProblem = problemDetails || previewProblem;
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>GFG POTD Helper</h1>
-        <div className="tabs">
-          <button
-            className={activeTab === 'details' ? 'active' : ''}
-            onClick={() => setActiveTab('details')}
-          >
-            Problem Details
-          </button>
-          <button
-            className={activeTab === 'hints' ? 'active' : ''}
-            onClick={() => setActiveTab('hints')}
-          >
-            Hints
-          </button>
-        </div>
+    <div className="app-container">
+      <header>
+        <h1>GFG POTD Solver</h1>
       </header>
 
-      <div className="content">
+      <main>
         {loading ? (
-          <p>Loading...</p>
-        ) : !chrome?.tabs ? (
-          <div className="dev-mode-notice">
-            <p>Running in development mode. Chrome API not available.</p>
-            <p>This is a preview of the extension interface.</p>
+          <div className="loading">
+            <p>Loading...</p>
           </div>
-        ) : (
-          <>
-            {activeTab === 'details' && (
-              <div className="problem-details">
-                <h2>{displayProblem.title}</h2>
-                <div
-                  className="description"
-                  dangerouslySetInnerHTML={{ __html: displayProblem.description }}
-                />
-                <div
-                  className="examples"
-                  dangerouslySetInnerHTML={{ __html: displayProblem.examples }}
-                />
-              </div>
-            )}
+        ) : currentProblem ? (
+          <div className="problem-container">
+            <h2>{currentProblem.title}</h2>
 
-            {activeTab === 'hints' && (
-              <div className="hints">
-                <h2>Helpful Hints</h2>
-                {hints.length > 0 ? (
-                  <ul>
-                    {hints.map((hint, index) => (
-                      <li key={index}>{hint}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No hints available for this problem yet.</p>
-                )}
-                <div className="approach-section">
-                  <h3>General Approach</h3>
-                  <p>1. Understand the problem statement thoroughly</p>
-                  <p>2. Identify input constraints and edge cases</p>
-                  <p>3. Consider multiple algorithm approaches</p>
-                  <p>4. Code the solution step by step</p>
-                  <p>5. Test with examples and edge cases</p>
+            {solution ? (
+              <div className="solution-container">
+                <h3>Solution</h3>
+                <pre className="code-block">{solution.code}</pre>
+                <div className="explanation">
+                  <h4>Explanation</h4>
+                  <p>{solution.explanation}</p>
                 </div>
               </div>
+            ) : (
+              <button className="fetch-solution-btn" onClick={handleFetchSolution}>
+                Get Solution
+              </button>
             )}
-          </>
+          </div>
+        ) : (
+          <div className="not-potd">
+            <p>Not on a GeeksforGeeks POTD page.</p>
+            <p>Please navigate to a POTD page to use this extension.</p>
+            <a
+              href="https://practice.geeksforgeeks.org/problem-of-the-day"
+              target="_blank"
+              rel="noreferrer"
+              className="potd-link"
+            >
+              Go to POTD
+            </a>
+          </div>
         )}
-      </div>
+      </main>
+
+      <footer>
+        <p>Created by mainak1023</p>
+      </footer>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
+

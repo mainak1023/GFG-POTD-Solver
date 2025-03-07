@@ -1,17 +1,20 @@
 {
     "manifest_version": 3,
-    "name": "GFG POTD Helper",
+    "name": "GFG POTD Solver",
     "version": "1.0.0",
-    "description": "A helper extension for solving GeeksForGeeks Problem of the Day",
+    "description": "Chrome extension that helps to solve Problem of the Day (POTD) on GeeksforGeeks",
     "action": {
         "default_popup": "index.html",
-        "default_title": "GFG POTD Helper"
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
     },
     "permissions": [
         "storage",
         "activeTab",
-        "scripting",
-        "tabs"
+        "scripting"
     ],
     "host_permissions": [
         "https://practice.geeksforgeeks.org/*"
@@ -26,9 +29,13 @@
             ]
         }
     ],
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
     "icons": {
-        "16": "vite.svg",
-        "48": "vite.svg",
-        "128": "vite.svg"
+        "16": "icons/icon48.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon48.png"
     }
 }

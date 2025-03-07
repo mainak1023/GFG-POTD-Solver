@@ -1,117 +1,102 @@
-.App {
+.app-container {
   width: 400px;
-  min-height: 500px;
-  max-height: 600px;
-  overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  min-height: 300px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 16px;
 }
 
-.App-header {
-  background-color: #2f8d46;
-  color: white;
-  padding: 10px 15px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.App-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
+header {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eaeaea;
   padding-bottom: 10px;
 }
 
-.tabs {
+header h1 {
+  color: #2f8d46;
+  margin: 0;
+  font-size: 24px;
+}
+
+.loading {
   display: flex;
-  gap: 5px;
-  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
 }
 
-.tabs button {
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 4px 4px 0 0;
-  flex: 1;
+.problem-container h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #333;
 }
 
-.tabs button.active {
-  background-color: white;
-  color: #2f8d46;
-  font-weight: bold;
+.solution-container {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
 }
 
-.content {
-  padding: 15px;
-}
-
-.problem-details h2 {
-  color: #2f8d46;
+.solution-container h3 {
   margin-top: 0;
+  color: #2f8d46;
 }
 
-.description {
-  margin-bottom: 20px;
+.code-block {
+  background-color: #f1f1f1;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
   line-height: 1.5;
 }
 
-.examples {
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 4px;
-  margin-top: 15px;
-}
-
-.hints ul {
-  padding-left: 20px;
-}
-
-.hints li {
-  margin-bottom: 10px;
-}
-
-.approach-section {
-  margin-top: 20px;
-  background-color: #eaf7ee;
-  padding: 12px;
-  border-radius: 4px;
-}
-
-.approach-section h3 {
-  margin-top: 0;
+.explanation h4 {
+  margin-bottom: 8px;
   color: #2f8d46;
 }
 
-.approach-section p {
-  margin: 5px 0;
-}
-
-.dev-mode-notice {
-  background-color: #fff3cd;
-  color: #856404;
-  padding: 10px;
+.fetch-solution-btn {
+  background-color: #2f8d46;
+  color: white;
+  border: none;
+  padding: 10px 16px;
   border-radius: 4px;
-  margin-bottom: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 16px;
 }
 
-/* Styling for code snippets */
-pre {
-  background-color: #f5f5f5;
-  padding: 10px;
+.fetch-solution-btn:hover {
+  background-color: #246a35;
+}
+
+.not-potd {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.potd-link {
+  display: inline-block;
+  background-color: #2f8d46;
+  color: white;
+  text-decoration: none;
+  padding: 10px 16px;
   border-radius: 4px;
-  overflow-x: auto;
+  margin-top: 16px;
+  font-weight: bold;
 }
 
-/* Add some space between sections */
-section {
-  margin-bottom: 20px;
+.potd-link:hover {
+  background-color: #246a35;
 }
 
-body,
-html {
-  width: 400px;
-  height: 600px;
-  overflow-y: auto;
+footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
 }
